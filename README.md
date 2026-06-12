@@ -1,16 +1,13 @@
 # 🐻‍❄️ Polars vs 🐼 Pandas — Benchmark Honesto
 
-Comparação de performance entre **Polars** e **Pandas** em operações comuns de
-um pipeline de dados, usando **10 milhões de linhas**. O objetivo não é "provar"
-que uma biblioteca é melhor, e sim **medir com método** e entender *por que* e
-*quando* cada uma vence.
+Comparação de performance entre **Polars** e **Pandas** em operações comuns de um
+pipeline de dados, com **10 milhões de linhas**, rodada em um **MacBook Air M2
+(8 núcleos)**. O objetivo não é "provar" que uma biblioteca é melhor, e sim
+**medir com método** e entender *por que* e *quando* cada uma vence.
 
 > Projeto nasceu de uma conversa com o Eduardo, que me apresentou o Polars. 🙏
 
-## 📊 Resultados
-
-_A tabela abaixo é atualizada automaticamente pelo `grafico.py` com os números da
-sua máquina. O exemplo inicial foi gerado em **1 thread** (subestima o Polars)._
+## 📊 Resultados (MacBook Air M2 · 8 threads)
 
 <!-- RESULTADOS_INICIO -->
 Rodado em **8 núcleo(s) de CPU** (Polars usando 8 thread(s)) · pandas 3.0.3 · polars 1.41.2 · Python 3.13.2 · 10,000,000 linhas · mediana de 7 execuções.
@@ -29,37 +26,45 @@ Rodado em **8 núcleo(s) de CPU** (Polars usando 8 thread(s)) · pandas 3.0.3 ·
 
 ![Benchmark](benchmark_polars_pandas.png)
 
-## 🔎 O que aprendi (a parte interessante)
+## 🔎 O que os números mostram
 
-- **Polars vence na maioria**, mas não em tudo. No `GroupBy` em 1 thread, o
-  pandas 3.0 empatou/ganhou — porque o maior trunfo do Polars é o **paralelismo
-  multi-core**, que some quando só há 1 thread.
-- **O modo `lazy` brilha no pipeline completo.** Com `scan_csv`, o otimizador faz
-  *predicate/projection pushdown*: lê só as colunas e linhas necessárias. Por isso
-  o pipeline "ler do disco + processar" é onde a diferença mais aparece.
+- **No M2 (8 núcleos), o Polars venceu todas as operações** — de **1.9x** (GroupBy)
+  a **~10x** (leitura de CSV e consulta complexa em memória).
+- **Os maiores ganhos foram em I/O e em operações pesadas:** leitura de CSV (9.9x),
+  consulta complexa em memória (9.0x), ordenação (6.5x), pipeline completo (6.3x)
+  e join (5.8x). São justamente as operações que mais se beneficiam de
+  **paralelismo + formato colunar Apache Arrow + engine em Rust**.
+- **O menor ganho foi o GroupBy (1.9x) — e isso é o detalhe mais revelador.**
+  Rodando a *mesma máquina* em **1 thread**, o pandas 3.0 chega a *empatar* no
+  GroupBy. Ou seja: boa parte da vantagem do Polars vem do **multi-core**, e o
+  GroupBy do pandas 3.0 é eficiente o bastante pra quase neutralizar a diferença
+  quando há só um núcleo.
+- **O modo `lazy` é o trunfo do pipeline.** Com `scan_csv`, o otimizador faz
+  *predicate/projection pushdown* (lê só as colunas e linhas necessárias). Por isso
+  o "ler do disco + processar" rende 6.3x mesmo incluindo a leitura.
 - **Cuidado com benchmark injusto:** comparar Polars lazy (que inclui a leitura)
   contra pandas operando sobre dados já em memória dá um resultado enganoso. Aqui
   separei "em memória" de "pipeline completo".
 
-## ⚖️ Single-thread vs multi-core: o experimento mais honesto
+## ⚖️ Single-thread vs multi-core: a comparação honesta
 
-A crítica nº 1 desse tipo de comparação é *"Polars só ganha porque usa todos os
-núcleos"*. Dá pra responder isso com dado, na **mesma máquina**, rodando duas vezes:
+A crítica nº 1 desse tipo de benchmark é *"Polars só ganha porque usa todos os
+núcleos"*. Dá pra responder com dado, na **mesma máquina**, rodando duas vezes:
 
 ```bash
-# 1 thread (neutraliza o paralelismo)
+# 1 thread (neutraliza o paralelismo) — o GroupBy do pandas chega a empatar
 POLARS_MAX_THREADS=1 python benchmark.py && python grafico.py
-# renomeie o resultado, ex: cp benchmark_polars_pandas.png bench_1thread.png
+cp benchmark_polars_pandas.png bench_1thread.png
 
-# todos os núcleos (ex.: 8 no MacBook Air M2)
+# todos os núcleos (8 no MacBook Air M2) — o Polars dispara
 python benchmark.py && python grafico.py
-# cp benchmark_polars_pandas.png bench_multicore.png
+cp benchmark_polars_pandas.png bench_multicore.png
 ```
 
 > As duas execuções sobrescrevem `resultados.json` / `.png`. Renomeie entre elas
-> se quiser guardar os dois gráficos.
+> para guardar os dois gráficos.
 
-## ▶️ Como rodar (no seu Mac — M2/Apple Silicon)
+## ▶️ Como rodar (Mac — Apple Silicon)
 
 ```bash
 # 1) entre na pasta do projeto
@@ -77,10 +82,9 @@ python benchmark.py
 python grafico.py
 ```
 
-O M2 tem 8 núcleos e o Polars usa todos por padrão — espere speedups maiores
-que os do exemplo em `groupby`, `join` e `sort`. O `grafico.py` atualiza a tabela
-de resultados acima automaticamente. Ajuste `N_ROWS` no topo de `benchmark.py`
-se quiser testar outros volumes.
+O `grafico.py` atualiza a tabela de resultados acima automaticamente com os
+números da execução. Ajuste `N_ROWS` no topo de `benchmark.py` para testar outros
+volumes.
 
 ## 🚀 Como publicar no GitHub
 
@@ -93,7 +97,7 @@ se quiser testar outros volumes.
 # uma vez só: gh auth login
 git init
 git add .
-git commit -m "Benchmark Polars vs Pandas em 10M de linhas"
+git commit -m "Benchmark Polars vs Pandas em 10M de linhas (MacBook Air M2)"
 gh repo create benchmark-polars-pandas --public --source=. --push
 ```
 
@@ -104,7 +108,7 @@ gh repo create benchmark-polars-pandas --public --source=. --push
 # 2) na pasta do projeto:
 git init
 git add .
-git commit -m "Benchmark Polars vs Pandas em 10M de linhas"
+git commit -m "Benchmark Polars vs Pandas em 10M de linhas (MacBook Air M2)"
 git branch -M main
 git remote add origin https://github.com/SEU_USUARIO/benchmark-polars-pandas.git
 git push -u origin main
@@ -116,6 +120,7 @@ git push -u origin main
 - **Warm-up** (2 execuções descartadas) + **mediana de 7 execuções** (robusta a outliers).
 - Dados sintéticos com `seed` fixa (reprodutível).
 - Comparação de leitura em **CSV e Parquet**, e de **eager vs lazy**.
+- Ambiente: MacBook Air M2 (8 núcleos) · macOS · pandas 3.0.3 · polars 1.41.2 · Python 3.13.2.
 
 ## 📦 Estrutura
 

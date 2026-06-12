@@ -80,17 +80,17 @@ for yi, s in zip(y, speedup):
 
 # --- Títulos gerais ---
 fig.suptitle("Polars vs Pandas — Benchmark em 10 milhões de linhas",
-             fontsize=19, fontweight="bold", x=0.10, ha="left", y=0.955)
+             fontsize=19, fontweight="bold", x=0.10, ha="left", y=0.965)
 subt = (f"{info['n_linhas']:,} linhas  ·  pandas {info['pandas']}  ·  "
         f"polars {info['polars']}  ·  Python {info['python']}  ·  "
         f"Polars com {n_threads} thread(s)  ·  mediana de {info['n_runs']} execuções")
-fig.text(0.10, 0.875, subt, fontsize=10.5, color="#5B6675", ha="left")
+fig.text(0.10, 0.905, subt, fontsize=10.5, color="#5B6675", ha="left")
 
-# Chave de cores (no lugar da legenda interna)
-fig.text(0.705, 0.875, "■", fontsize=13, color=COR_PANDAS, ha="left", va="center")
-fig.text(0.720, 0.875, "pandas", fontsize=11, color="#5B6675", ha="left", va="center")
-fig.text(0.795, 0.875, "■", fontsize=13, color=COR_POLARS, ha="left", va="center")
-fig.text(0.810, 0.875, "Polars", fontsize=11, color="#5B6675", ha="left", va="center",
+# Chave de cores em linha própria, abaixo do subtítulo (evita sobreposição)
+fig.text(0.10, 0.858, "■", fontsize=13, color=COR_PANDAS, ha="left", va="center")
+fig.text(0.123, 0.858, "pandas", fontsize=11, color="#5B6675", ha="left", va="center")
+fig.text(0.198, 0.858, "■", fontsize=13, color=COR_POLARS, ha="left", va="center")
+fig.text(0.221, 0.858, "Polars", fontsize=11, color=COR_POLARS, ha="left", va="center",
          fontweight="bold")
 
 if n_threads <= 1:
