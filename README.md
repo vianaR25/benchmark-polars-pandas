@@ -86,34 +86,6 @@ O `grafico.py` atualiza a tabela de resultados acima automaticamente com os
 números da execução. Ajuste `N_ROWS` no topo de `benchmark.py` para testar outros
 volumes.
 
-## 🚀 Como publicar no GitHub
-
-> Os comandos abaixo você roda na sua máquina (suas credenciais ficam com você).
-> O `.gitignore` já exclui os ~490 MB de dados gerados, então o repo fica leve.
-
-**Opção A — GitHub CLI (`gh`), mais rápida:**
-
-```bash
-# uma vez só: gh auth login
-git init
-git add .
-git commit -m "Benchmark Polars vs Pandas em 10M de linhas (MacBook Air M2)"
-gh repo create benchmark-polars-pandas --public --source=. --push
-```
-
-**Opção B — manual:**
-
-```bash
-# 1) crie um repositório VAZIO em https://github.com/new (sem README/licença)
-# 2) na pasta do projeto:
-git init
-git add .
-git commit -m "Benchmark Polars vs Pandas em 10M de linhas (MacBook Air M2)"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/benchmark-polars-pandas.git
-git push -u origin main
-```
-
 ## 🧪 Metodologia
 
 - Mesmas operações, com **código idiomático** de cada biblioteca.
