@@ -1,0 +1,21 @@
+# Dados gerados pelo benchmark (grandes — recriados ao rodar)
+fact.csv
+fact.parquet
+
+# Gráficos renomeados de execuções extras (opcional)
+bench_1thread.png
+bench_multicore.png
+
+# Ambiente Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Editores
+.vscode/
+.idea/

@@ -1,0 +1,5 @@
+polars>=1.0
+pandas>=2.2
+numpy
+matplotlib
+pyarrow

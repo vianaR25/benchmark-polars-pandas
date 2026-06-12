@@ -1,0 +1,48 @@
+{
+  "info": {
+    "n_linhas": 10000000,
+    "n_usuarios": 500000,
+    "n_runs": 7,
+    "cpu_cores": 8,
+    "polars_threads": 8,
+    "polars": "1.41.2",
+    "pandas": "3.0.3",
+    "numpy": "2.4.6",
+    "python": "3.13.2",
+    "maquina": "macOS-26.5-arm64-arm-64bit-Mach-O"
+  },
+  "resultados": {
+    "leitura_csv": {
+      "pandas": 4.882497209000576,
+      "polars": 0.4952937079997355
+    },
+    "leitura_parquet": {
+      "pandas": 0.17508695900050952,
+      "polars": 0.07728450000013254
+    },
+    "filtro": {
+      "pandas": 0.06621774999985064,
+      "polars": 0.012501166999754787
+    },
+    "groupby_agg": {
+      "pandas": 0.35774666700035596,
+      "polars": 0.185226416999285
+    },
+    "join": {
+      "pandas": 0.7463373339996906,
+      "polars": 0.12899770799958787
+    },
+    "sort": {
+      "pandas": 3.325645500000064,
+      "polars": 0.5094006250001257
+    },
+    "consulta_memoria": {
+      "pandas": 0.9645911249999699,
+      "polars": 0.10770370800037199
+    },
+    "pipeline_completo": {
+      "pandas": 6.354634207999879,
+      "polars": 1.0119305420003002
+    }
+  }
+}
